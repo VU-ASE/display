@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/VU-ASE/display/compare/v1.0.0...v1.0.1) (2024-07-26)
+
+
+### Bug Fixes
+
+* upgrade to rovercom + roverlib ([f6a4d07](https://github.com/VU-ASE/display/commit/f6a4d071eb0797626c4c7413e11bd8d5822db900))
+
 ## 1.0.0 (2024-07-24)
 
 
