@@ -1,0 +1,13 @@
+name: display
+author: vu-ase
+source: https://github.com/vu-ase/display
+version: 1.0.0
+description: displays system status on Rover OLED display
+
+commands:
+  build: make build 
+  run: ./bin/display
+
+inputs: []
+outputs: []
+configuration: []

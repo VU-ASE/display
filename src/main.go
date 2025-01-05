@@ -4,11 +4,12 @@ import (
 	"image"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
 	"golang.org/x/image/math/fixed"
-	"google.golang.org/protobuf/proto"
 	"periph.io/x/conn/v3/i2c/i2creg"
 	"periph.io/x/devices/v3/ssd1306"
 	"periph.io/x/devices/v3/ssd1306/image1bit"
@@ -17,13 +18,10 @@ import (
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/mem"
 
-	zmq "github.com/pebbe/zmq4"
 	"github.com/rs/zerolog/log"
 
-	pb_module_outputs "github.com/VU-ASE/rovercom/packages/go/outputs"
+	roverlib "github.com/VU-ASE/roverlib-go/src"
 )
-
-const batterysrvr = "tcp://localhost:6000"
 
 // drawStringCentered draws a string in the center of the image
 func drawStringCentered(drawer *font.Drawer, img *image1bit.VerticalLSB, str string) {
@@ -46,66 +44,89 @@ func drawString(drawer *font.Drawer, str string) {
 	drawer.DrawString(str)
 }
 
-func main() {
+func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error {
+	log.Info().Msgf("Starting display service v%s", *service.Version)
 	if _, err := host.Init(); err != nil {
-		log.Err(err)
+		return err
 	}
 
 	// Open a handle to the first available I²C bus:
 	// Display is on i2c-5 for the debix-board
 	bus, err := i2creg.Open("/dev/i2c-5")
 	if err != nil {
-		log.Err(err)
+		return err
 	}
 
 	// Open a handle to a ssd1306 connected on the I²C bus:
 	dev, err := ssd1306.NewI2C(bus, &ssd1306.DefaultOpts)
 	if err != nil {
-		log.Err(err)
+		return err
 	}
 
-	// Start zmq subscriber
-	subscriber, err := zmq.NewSocket(zmq.SUB)
+	// Read the rover identity from the /etc/rover file (roverd created), if the file exists
+	hostname := "Anonymous Rover"
+	etcRover, err := os.ReadFile("/etc/rover")
 	if err != nil {
-		log.Err(err)
-	}
-	defer subscriber.Close()
+		log.Warn().Err(err).Msg("Failed to read /etc/rover")
+	} else {
+		lines := strings.Split(string(etcRover), "\n")
+		if len(lines) < 2 {
+			log.Warn().Msg("Invalid /etc/rover file")
+		} else {
+			// The first line of the file contains the rover index
+			index := string(lines[0])
+			// Second line contains the rover name
+			name := string(lines[1])
 
-	err = subscriber.Connect(batterysrvr)
-	if err != nil {
-		log.Err(err)
+			hostname = "Rover " + index + " (" + name + ")"
+		}
 	}
 
-	err = subscriber.SetSubscribe("") // Subscribe to all messages
-	if err != nil {
-		log.Err(err)
-	}
+	//
+	// Roverlib will terminate our service when it cannot find the desired read stream
+	// so we always initialize the display first, before we try accessing the read stream
+	//
+
+	batVoltStr := "Bat: UNAVAILABLE"
+	batVoltUpdate := time.Now() // we don't want to give false information if the battery has not been updated in a while
+	fetchBattery := false
+
+	// Keep reading the battery in the background
+	go func() {
+		for {
+			log.Info().Msg("Fetching battery voltage")
+			if !fetchBattery {
+				log.Info().Msg("Fetching was disabled")
+				time.Sleep(1 * time.Second)
+				continue
+			}
+
+			battery := service.GetReadStream("battery", "voltage")
+			if battery == nil {
+				log.Warn().Msg("Battery read stream not found")
+				batVoltStr = "Bat: UNAVAILABLE"
+			} else {
+				bat, err := battery.Read()
+				if err != nil {
+					log.Error().Err(err).Msg("Error reading battery voltage")
+					batVoltStr = "Bat: ERROR"
+				} else if bat.GetBatteryOutput() == nil {
+					log.Warn().Msg("Battery output not found")
+					batVoltStr = "Bat: UNDEFINED"
+				} else {
+					voltage := bat.GetBatteryOutput().CurrentOutputVoltage
+					log.Info().Float64("voltage", float64(voltage)).Msg("Battery voltage")
+					batVoltStr = "Bat: " + strconv.FormatFloat(float64(voltage), 'f', 2, 64) + "V"
+					batVoltUpdate = time.Now()
+				}
+			}
+		}
+	}()
 
 	for {
-		// Main receiver loop
-		msg, err := subscriber.RecvBytes(0)
-		// Don't exit on errors but log them
-		if err != nil {
-			log.Error().Err(err).Msg("Error receiving bytes")
-			continue
-		}
-
-		// Decode the message -- first is the sensor wrapper message
-		wrapperData := pb_module_outputs.SensorOutput{}
-		err = proto.Unmarshal(msg, &wrapperData)
-		if err != nil {
-			log.Error().Err(err).Msg("Error unmarshalling message")
-			continue
-		}
-
-		// Get the distance output from the message
-		batData := wrapperData.GetBatteryOutput()
-		batVolt := float64(batData.CurrentOutputVoltage)
-
-		// Convert battery voltage to a string and write it to the device
-		batVoltStr := "Bat: " + strconv.FormatFloat(batVolt, 'f', 2, 64) + "V"
-
-		// Get system utilization
+		//
+		// System utilization stats
+		//
 		cpuPercent, _ := cpu.Percent(0, true)
 		cpuStr := "CPU: "
 		for _, cpu := range cpuPercent {
@@ -114,7 +135,6 @@ func main() {
 		cpuStr = cpuStr[:len(cpuStr)-1]
 		memInfo, _ := mem.VirtualMemory()
 		memStr := "Mem: " + strconv.FormatFloat(memInfo.UsedPercent, 'f', 2, 64) + "%"
-
 		img := image1bit.NewVerticalLSB(dev.Bounds())
 		f := basicfont.Face7x13
 		drawer := font.Drawer{
@@ -124,38 +144,48 @@ func main() {
 			Dot:  fixed.P(0, img.Bounds().Dy()-1-f.Descent),
 		}
 
+		//
+		// Drawing
+		//
+
 		// Initialize starting Y coordinate
 		y := int(img.Bounds().Dy() - 1 - basicfont.Face7x13.Metrics().Height.Ceil())
-
 		// Draw battery voltage
 		drawer.Dot = fixed.P(0, y)
 		drawString(&drawer, batVoltStr)
-
 		// Decrease Y coordinate by text height
 		y -= basicfont.Face7x13.Metrics().Height.Ceil()
-
 		// Draw CPU usage
 		drawer.Dot = fixed.P(0, y)
 		drawString(&drawer, cpuStr)
-
 		// Decrease Y coordinate by text height
 		y -= basicfont.Face7x13.Metrics().Height.Ceil()
-
 		// Draw memory usage
 		drawer.Dot = fixed.P(0, y)
 		drawString(&drawer, memStr)
 		y -= basicfont.Face7x13.Metrics().Height.Ceil()
-
 		// Draw hostname
 		drawer.Dot = fixed.P(0, y)
-		hostname, _ := os.Hostname()
-
-		// Add "=" on either side of the hostname
-		hostname = "=" + hostname + "="
+		// hostname = "=" + hostname + "="
 		drawStringCentered(&drawer, img, hostname)
-
 		if err := dev.Draw(dev.Bounds(), img, image.Point{}); err != nil {
 			log.Error().Err(err).Msg("Error drawing image")
 		}
+
+		fetchBattery = true
+
+		// If more than 30 seconds have passed since the last battery update, show it
+		if time.Since(batVoltUpdate) > 30*time.Second {
+			batVoltStr = "Bat: TIMEOUT"
+		}
 	}
+}
+
+func onTerminate(sig os.Signal) error {
+	log.Info().Msg("Terminating display service")
+	return nil
+}
+
+func main() {
+	roverlib.Run(run, onTerminate)
 }

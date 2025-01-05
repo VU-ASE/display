@@ -1,0 +1,17 @@
+{
+    "name": "display",
+    "version": "1.0.1",
+    "inputs": [{
+        "service": "battery",
+        "streams": [{
+            "name": "voltage",
+            "address": "tcp://localhost:5699"
+        }]
+    }],
+    "outputs": [],
+    "configuration": [],
+    "tuning": {
+        "enabled": false,
+        "address": "tcp://unix:8829"
+    }
+}
