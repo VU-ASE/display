@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/VU-ASE/display/compare/v1.0.1...v1.1.0) (2025-01-05)
+
+
+### Features
+
+* integration with battery ([2deb572](https://github.com/VU-ASE/display/commit/2deb572051c852b98c9d880817874eef2e57192d))
+
 ## [1.0.1](https://github.com/VU-ASE/display/compare/v1.0.0...v1.0.1) (2024-07-26)
 
 
