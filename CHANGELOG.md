@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/VU-ASE/display/compare/v1.1.0...v1.1.1) (2025-01-06)
+
+
+### Bug Fixes
+
+* service.yaml version ([e23a23f](https://github.com/VU-ASE/display/commit/e23a23fe29f3e3b369ce9cd7848739f0ac453f0a))
+
 ## [1.1.0](https://github.com/VU-ASE/display/compare/v1.0.1...v1.1.0) (2025-01-05)
 
 
