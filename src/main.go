@@ -78,7 +78,7 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 			// Second line contains the rover name
 			name := string(lines[1])
 
-			hostname = "Rover " + index + " (" + name + ")"
+			hostname = index + " (" + name + ")"
 		}
 	}
 
