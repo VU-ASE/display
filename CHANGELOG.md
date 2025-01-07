@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/VU-ASE/display/compare/v1.2.0...v1.2.1) (2025-01-07)
+
+
+### Bug Fixes
+
+* exclude "rover" text from top line ([c4e7cf9](https://github.com/VU-ASE/display/commit/c4e7cf96514a841149c427743f7692b2ae32ba16))
+
 ## [1.2.0](https://github.com/VU-ASE/display/compare/v1.1.1...v1.2.0) (2025-01-07)
 
 
