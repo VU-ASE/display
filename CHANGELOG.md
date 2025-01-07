@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/VU-ASE/display/compare/v1.1.1...v1.2.0) (2025-01-07)
+
+
+### Features
+
+* slower update loop to be able to read the CPU utilization ([e6a95ff](https://github.com/VU-ASE/display/commit/e6a95ffbe30d9857d87ca99cfcf1307bf61c20d8))
+
 ## [1.1.1](https://github.com/VU-ASE/display/compare/v1.1.0...v1.1.1) (2025-01-06)
 
 
