@@ -178,6 +178,9 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 		if time.Since(batVoltUpdate) > 30*time.Second {
 			batVoltStr = "Bat: TIMEOUT"
 		}
+
+		// Do not waste CPU cycles, and let the user see the display
+		time.Sleep(2 * time.Second)
 	}
 }
 
