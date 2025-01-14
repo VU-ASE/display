@@ -186,7 +186,7 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 		}
 
 		// Do not waste CPU cycles, and let the user see the display
-		time.Sleep(2 * time.Second)
+		// time.Sleep(2 * time.Second)
 	}
 }
 
