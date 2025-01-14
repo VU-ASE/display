@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/VU-ASE/display/compare/v1.3.1...v1.4.0) (2025-01-14)
+
+
+### Features
+
+* restore original slow update ([239a3c6](https://github.com/VU-ASE/display/commit/239a3c674a23895bef1be52c2c9b581be0ca0126))
+
 ## [1.3.1](https://github.com/VU-ASE/display/compare/v1.3.0...v1.3.1) (2025-01-14)
 
 
