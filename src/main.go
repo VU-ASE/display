@@ -23,6 +23,8 @@ import (
 	roverlib "github.com/VU-ASE/roverlib-go/src"
 )
 
+var terminated = false
+
 // drawStringCentered draws a string in the center of the image
 func drawStringCentered(drawer *font.Drawer, img *image1bit.VerticalLSB, str string) {
 	// Calculate the width of the text
@@ -65,7 +67,7 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 
 	// Read the rover identity from the /etc/rover file (roverd created), if the file exists
 	hostname := "Anonymous Rover"
-	etcRover, err := os.ReadFile("/etc/rover")
+	etcRover, err := os.ReadFile("/etc/roverd/info.txt")
 	if err != nil {
 		log.Warn().Err(err).Msg("Failed to read /etc/rover")
 	} else {
@@ -152,24 +154,28 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 		y := int(img.Bounds().Dy() - 1 - basicfont.Face7x13.Metrics().Height.Ceil())
 		// Draw battery voltage
 		drawer.Dot = fixed.P(0, y)
-		drawString(&drawer, batVoltStr)
-		// Decrease Y coordinate by text height
-		y -= basicfont.Face7x13.Metrics().Height.Ceil()
-		// Draw CPU usage
-		drawer.Dot = fixed.P(0, y)
-		drawString(&drawer, cpuStr)
-		// Decrease Y coordinate by text height
-		y -= basicfont.Face7x13.Metrics().Height.Ceil()
-		// Draw memory usage
-		drawer.Dot = fixed.P(0, y)
-		drawString(&drawer, memStr)
-		y -= basicfont.Face7x13.Metrics().Height.Ceil()
-		// Draw hostname
-		drawer.Dot = fixed.P(0, y)
-		// hostname = "=" + hostname + "="
-		drawStringCentered(&drawer, img, hostname)
-		if err := dev.Draw(dev.Bounds(), img, image.Point{}); err != nil {
-			log.Error().Err(err).Msg("Error drawing image")
+		if terminated {
+			drawString(&drawer, "Unplug me!")
+		} else {
+			drawString(&drawer, batVoltStr)
+			// Decrease Y coordinate by text height
+			y -= basicfont.Face7x13.Metrics().Height.Ceil()
+			// Draw CPU usage
+			drawer.Dot = fixed.P(0, y)
+			drawString(&drawer, cpuStr)
+			// Decrease Y coordinate by text height
+			y -= basicfont.Face7x13.Metrics().Height.Ceil()
+			// Draw memory usage
+			drawer.Dot = fixed.P(0, y)
+			drawString(&drawer, memStr)
+			y -= basicfont.Face7x13.Metrics().Height.Ceil()
+			// Draw hostname
+			drawer.Dot = fixed.P(0, y)
+			// hostname = "=" + hostname + "="
+			drawStringCentered(&drawer, img, hostname)
+			if err := dev.Draw(dev.Bounds(), img, image.Point{}); err != nil {
+				log.Error().Err(err).Msg("Error drawing image")
+			}
 		}
 
 		fetchBattery = true
@@ -186,6 +192,8 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 
 func onTerminate(sig os.Signal) error {
 	log.Info().Msg("Terminating display service")
+	terminated = true
+	time.Sleep(1 * time.Second)
 	return nil
 }
 
