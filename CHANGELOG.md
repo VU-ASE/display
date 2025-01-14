@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/VU-ASE/display/compare/v1.2.1...v1.3.0) (2025-01-14)
+
+
+### Features
+
+* show termination ([fd521f2](https://github.com/VU-ASE/display/commit/fd521f279baed2a152c86d551f185d6c8c32ca28))
+
 ## [1.2.1](https://github.com/VU-ASE/display/compare/v1.2.0...v1.2.1) (2025-01-07)
 
 
