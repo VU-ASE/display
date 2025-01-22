@@ -122,6 +122,8 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 					batVoltUpdate = time.Now()
 				}
 			}
+			// Do not waste CPU cycles, and let the user see the display
+			time.Sleep(5 * time.Second)
 		}
 	}()
 
@@ -186,7 +188,7 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 		}
 
 		// Do not waste CPU cycles, and let the user see the display
-		time.Sleep(2 * time.Second)
+		time.Sleep(5 * time.Second)
 	}
 }
 
