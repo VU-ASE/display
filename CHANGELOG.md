@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/VU-ASE/display/compare/v1.4.0...v1.4.1) (2025-01-22)
+
+
+### Bug Fixes
+
+* added sleep for both loops ([253a27d](https://github.com/VU-ASE/display/commit/253a27d69670a24c23c5f588230249aff723878a))
+
 ## [1.4.0](https://github.com/VU-ASE/display/compare/v1.3.1...v1.4.0) (2025-01-22)
 
 
