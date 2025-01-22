@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.0](https://github.com/VU-ASE/display/compare/v1.3.1...v1.4.0) (2025-01-22)
+
+
+### Features
+
+* restore original slow update ([239a3c6](https://github.com/VU-ASE/display/commit/239a3c674a23895bef1be52c2c9b581be0ca0126))
+
+
+### Bug Fixes
+
+* disable -buildvcs for both testing and building ([ab855f0](https://github.com/VU-ASE/display/commit/ab855f06bc20b4a9dffb2fe725e9404d72c9f7d2))
+* disable tests ([34a9666](https://github.com/VU-ASE/display/commit/34a966687ce8cabe28e9182e3e8cea65942212ec))
+* disable VCS builds for testing ([39ab388](https://github.com/VU-ASE/display/commit/39ab3880274faf6c235fdb864437e74827082882))
+* disable VSC during testing ([e5e24f2](https://github.com/VU-ASE/display/commit/e5e24f2f347a8b182a4a17cbd95cfaf2d32ba38a))
+
 ## [1.3.1](https://github.com/VU-ASE/display/compare/v1.3.0...v1.3.1) (2025-01-14)
 
 
