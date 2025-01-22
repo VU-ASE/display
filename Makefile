@@ -6,11 +6,11 @@ BINARY_NAME=display
 
 lint:
 	@echo "Lint check..."
-	@golangci-lint run
+	@golangci-lint run 
 
 build: #lint
 	@echo "building ${BINARY_NAME}"
-	@cd src/ && go build  -o "../$(BUILD_DIR)${BINARY_NAME}" ${buildargs}
+	@cd src/ && go build  -o "../$(BUILD_DIR)${BINARY_NAME}" ${buildargs} -buildvcs=false
 
 #
 # You can specify run arguments and build arguments using runargs and buildargs, like this:
