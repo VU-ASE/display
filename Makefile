@@ -10,7 +10,7 @@ lint:
 
 build: #lint
 	@echo "building ${BINARY_NAME}"
-	@cd src/ && go build  -o "../$(BUILD_DIR)${BINARY_NAME}" ${buildargs} -buildvcs=false
+	@cd src/ && go build  -o "../$(BUILD_DIR)${BINARY_NAME}" ${buildargs} 
 
 #
 # You can specify run arguments and build arguments using runargs and buildargs, like this:
@@ -27,4 +27,4 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 test: lint
-	go test ./src -v -count=1 -timeout 0 -buildvcs=false
+	go test ./src -v -count=1 -timeout 0 
