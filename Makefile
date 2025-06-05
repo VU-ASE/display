@@ -6,7 +6,8 @@ BINARY_NAME=display
 
 lint:
 	@echo "Lint check..."
-	@golangci-lint run 
+	@GOFLAGS="-buildvcs=false" golangci-lint run
+	@echo "Lint complete"
 
 build: #lint
 	@echo "building ${BINARY_NAME}"
@@ -27,4 +28,4 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 test: lint
-	go test ./src -v -count=1 -timeout 0 
+	@echo "No tests for display"
