@@ -222,8 +222,8 @@ func voltageToPercent(voltage float32) string {
 
 	percentage := int((voltage - EMPTY_BATTERY_VOLTAGE) / (FULL_BATTERY_VOLTAGE - EMPTY_BATTERY_VOLTAGE) * 100)
 
-	if(percentage < 0){
-		return "1% <"
+	if(percentage < 1){
+		return "< 1%"
 	}
 
 	return strconv.Itoa(percentage) + "%"
