@@ -25,6 +25,10 @@ import (
 
 var terminated = false
 
+const EMPTY_BATTERY_VOLTAGE = 15.36
+const FULL_BATTERY_VOLTAGE = 16.8
+const PLUGGED_IN_BATTERY_VOLTAGE = 16.9
+
 // drawStringCentered draws a string in the center of the image
 func drawStringCentered(drawer *font.Drawer, img *image1bit.VerticalLSB, str string) {
 	// Calculate the width of the text
@@ -90,6 +94,7 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 	//
 
 	batVoltStr := "Bat: UNAVAILABLE"
+	batPercentStr := "Pct: UNAVAILABLE"
 	batVoltUpdate := time.Now() // we don't want to give false information if the battery has not been updated in a while
 	fetchBattery := false
 
@@ -107,18 +112,22 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 			if battery == nil {
 				log.Warn().Msg("Battery read stream not found")
 				batVoltStr = "Bat: UNAVAILABLE"
+				batPercentStr = "Pct: UNAVAILABLE"
 			} else {
 				bat, err := battery.Read()
 				if err != nil {
 					log.Error().Err(err).Msg("Error reading battery voltage")
 					batVoltStr = "Bat: ERROR"
+					batPercentStr = "Pct: ERROR"
 				} else if bat.GetBatteryOutput() == nil {
 					log.Warn().Msg("Battery output not found")
 					batVoltStr = "Bat: UNDEFINED"
+					batPercentStr = "Pct: UNDEFINED"
 				} else {
 					voltage := bat.GetBatteryOutput().CurrentOutputVoltage
 					log.Info().Float64("voltage", float64(voltage)).Msg("Battery voltage")
 					batVoltStr = "Bat: " + strconv.FormatFloat(float64(voltage), 'f', 2, 64) + "V"
+					batPercentStr = "Pct: " + voltageToPercent(voltage)
 					batVoltUpdate = time.Now()
 				}
 			}
@@ -153,12 +162,17 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 		//
 
 		// Initialize starting Y coordinate
-		y := int(img.Bounds().Dy() - 1 - basicfont.Face7x13.Metrics().Height.Ceil())
+		y := int(img.Bounds().Dy() - 1)
 		// Draw battery voltage
 		drawer.Dot = fixed.P(0, y)
 		if terminated {
 			drawString(&drawer, "Unplug me!")
 		} else {
+			// Draw Battery Percentage
+			drawString(&drawer, batPercentStr)
+			// Decrease Y coordinate by text height
+			y -= basicfont.Face7x13.Metrics().Height.Ceil()
+			// Draw Battery voltage
 			drawString(&drawer, batVoltStr)
 			// Decrease Y coordinate by text height
 			y -= basicfont.Face7x13.Metrics().Height.Ceil()
@@ -185,11 +199,28 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 		// If more than 30 seconds have passed since the last battery update, show it
 		if time.Since(batVoltUpdate) > 30*time.Second {
 			batVoltStr = "Bat: TIMEOUT"
+			batPercentStr = "Pct: TIMEOUT"
 		}
 
 		// Do not waste CPU cycles, and let the user see the display
 		time.Sleep(5 * time.Second)
 	}
+}
+
+func voltageToPercent(voltage float32) string {
+	if(voltage < EMPTY_BATTERY_VOLTAGE){
+		return "turning off..."
+	} 
+	if(voltage > PLUGGED_IN_BATTERY_VOLTAGE){
+		return "plugged in"
+	}
+	if(voltage > FULL_BATTERY_VOLTAGE){
+		return "100%"
+	}
+	// percentage must be between 0-100 here
+
+	percentage := int((voltage - EMPTY_BATTERY_VOLTAGE) / (FULL_BATTERY_VOLTAGE - EMPTY_BATTERY_VOLTAGE) * 100)
+	return strconv.Itoa(percentage) + "%"
 }
 
 func onTerminate(sig os.Signal) error {
