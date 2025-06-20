@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.2](https://github.com/VU-ASE/display/compare/v1.5.1...v1.5.2) (2025-06-20)
+
+
+### Bug Fixes
+
+* displaying 0% ([f15a2bb](https://github.com/VU-ASE/display/commit/f15a2bbc0e05255f38481b9fd75647b55441b80b))
+* incorrect empty voltage ([493f003](https://github.com/VU-ASE/display/commit/493f0031b9318b9fb5511bcb3e635c56fa2a7c3a))
+* typo in percentage ([fc4eebb](https://github.com/VU-ASE/display/commit/fc4eebb5a45561b733be92fc51fb057deb458183))
+
 ## [1.5.1](https://github.com/VU-ASE/display/compare/v1.5.0...v1.5.1) (2025-06-20)
 
 
