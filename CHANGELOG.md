@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0](https://github.com/VU-ASE/display/compare/v1.4.1...v1.5.0) (2025-06-20)
+
+
+### Features
+
+* added pr event trigger for build action ([919dc42](https://github.com/VU-ASE/display/commit/919dc425c233b4c9a7af9b226293fe2a1baaa3a9))
+* battery percentage ([5fe48ae](https://github.com/VU-ASE/display/commit/5fe48ae3f280edf7c544120e402a7cbf1ec1ef04))
+
+
+### Bug Fixes
+
+* added buildvcs=false and brought back the test action ([803c54a](https://github.com/VU-ASE/display/commit/803c54a7acdd1b1c119faf81e4d546267aa8cf69))
+
 ## [1.4.1](https://github.com/VU-ASE/display/compare/v1.4.0...v1.4.1) (2025-01-22)
 
 
