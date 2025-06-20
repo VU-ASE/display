@@ -25,7 +25,7 @@ import (
 
 var terminated = false
 
-const EMPTY_BATTERY_VOLTAGE = 15.36
+const EMPTY_BATTERY_VOLTAGE = 14.9
 const FULL_BATTERY_VOLTAGE = 16.8
 const PLUGGED_IN_BATTERY_VOLTAGE = 16.9
 
