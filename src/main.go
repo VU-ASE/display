@@ -173,6 +173,7 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 			// Decrease Y coordinate by text height
 			y -= basicfont.Face7x13.Metrics().Height.Ceil()
 			// Draw Battery voltage
+			drawer.Dot = fixed.P(0, y)
 			drawString(&drawer, batVoltStr)
 			// Decrease Y coordinate by text height
 			y -= basicfont.Face7x13.Metrics().Height.Ceil()
