@@ -93,8 +93,8 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 	// so we always initialize the display first, before we try accessing the read stream
 	//
 
-	batVoltStr := "Bat: UNAVAILABLE"
-	batPercentStr := "Pct: UNAVAILABLE"
+	batVoltStr := "Vlt: UNAVAILABLE"
+	batPercentStr := "Bat: UNAVAILABLE"
 	batVoltUpdate := time.Now() // we don't want to give false information if the battery has not been updated in a while
 	fetchBattery := false
 
@@ -111,23 +111,23 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 			battery := service.GetReadStream("battery", "voltage")
 			if battery == nil {
 				log.Warn().Msg("Battery read stream not found")
-				batVoltStr = "Bat: UNAVAILABLE"
-				batPercentStr = "Pct: UNAVAILABLE"
+				batVoltStr = "Vlt: UNAVAILABLE"
+				batPercentStr = "Bat: UNAVAILABLE"
 			} else {
 				bat, err := battery.Read()
 				if err != nil {
 					log.Error().Err(err).Msg("Error reading battery voltage")
-					batVoltStr = "Bat: ERROR"
-					batPercentStr = "Pct: ERROR"
+					batVoltStr = "Vlt: ERROR"
+					batPercentStr = "Bat: ERROR"
 				} else if bat.GetBatteryOutput() == nil {
 					log.Warn().Msg("Battery output not found")
-					batVoltStr = "Bat: UNDEFINED"
-					batPercentStr = "Pct: UNDEFINED"
+					batVoltStr = "Vlt: UNDEFINED"
+					batPercentStr = "Bat: UNDEFINED"
 				} else {
 					voltage := bat.GetBatteryOutput().CurrentOutputVoltage
 					log.Info().Float64("voltage", float64(voltage)).Msg("Battery voltage")
-					batVoltStr = "Bat: " + strconv.FormatFloat(float64(voltage), 'f', 2, 64) + "V"
-					batPercentStr = "Pct: " + voltageToPercent(voltage)
+					batVoltStr = "Vlt: " + strconv.FormatFloat(float64(voltage), 'f', 2, 64) + "V"
+					batPercentStr = "Bat: " + voltageToPercent(voltage)
 					batVoltUpdate = time.Now()
 				}
 			}
@@ -173,6 +173,7 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 			// Decrease Y coordinate by text height
 			y -= basicfont.Face7x13.Metrics().Height.Ceil()
 			// Draw Battery voltage
+			drawer.Dot = fixed.P(0, y)
 			drawString(&drawer, batVoltStr)
 			// Decrease Y coordinate by text height
 			y -= basicfont.Face7x13.Metrics().Height.Ceil()
@@ -198,8 +199,8 @@ func run(service roverlib.Service, config *roverlib.ServiceConfiguration) error 
 
 		// If more than 30 seconds have passed since the last battery update, show it
 		if time.Since(batVoltUpdate) > 30*time.Second {
-			batVoltStr = "Bat: TIMEOUT"
-			batPercentStr = "Pct: TIMEOUT"
+			batVoltStr = "Vlt: TIMEOUT"
+			batPercentStr = "Bat: TIMEOUT"
 		}
 
 		// Do not waste CPU cycles, and let the user see the display
