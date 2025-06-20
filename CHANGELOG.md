@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/VU-ASE/display/compare/v1.5.0...v1.5.1) (2025-06-20)
+
+
+### Bug Fixes
+
+* incorrectly displaying battery voltage ([c492e92](https://github.com/VU-ASE/display/commit/c492e92e67f218bb736398383e447c980957348b))
+
 ## [1.5.0](https://github.com/VU-ASE/display/compare/v1.4.1...v1.5.0) (2025-06-20)
 
 
