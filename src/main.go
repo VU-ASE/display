@@ -20,7 +20,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	roverlib "github.com/VU-ASE/roverlib-go/src"
+	roverlib "github.com/VU-ASE/roverlib-go/v2/src"
 )
 
 var terminated = false
