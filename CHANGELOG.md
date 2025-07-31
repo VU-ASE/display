@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/VU-ASE/display/compare/v1.5.2...v2.0.0) (2025-07-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* update to rovercom v2
+
+### Features
+
+* update to rovercom v2 ([b72e61e](https://github.com/VU-ASE/display/commit/b72e61eaa34695d9108bb7be9d9dcd66bc29a47b))
+
 ## [1.5.2](https://github.com/VU-ASE/display/compare/v1.5.1...v1.5.2) (2025-06-20)
 
 
