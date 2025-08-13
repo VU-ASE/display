@@ -7,6 +7,9 @@ import TabItem from '@theme/TabItem';
 
 The `display` service shows the Rover identity and resource utilization on the OLED ssd1306 display that is mounted on the front of each Rover.
 
+![The ssd1306 display mounted on the front of Rover 1](https://github.com/user-attachments/assets/038036e2-43dd-47f0-a785-140abefc9612)
+
+
 :::tip
 
 We do not recommend installing this service manually, as `roverd` will automatically check for updates and install it as a daemon service every time the Rover boots.
